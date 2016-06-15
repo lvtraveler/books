@@ -1,0 +1,56 @@
+一、修改 hosts 文件
+
+打开“我的电脑”，进入 C:\Windows\System32\drivers\etc 目录，然后打开 hosts 文件，在最下面添加一行代码：
+127.0.0.1 laravel.dev
+之后保存退出（可能需要管理员权限）。
+二、启用 WampServer 虚拟域名功能
+
+进入 D:\wamp\bin\apache\apache2.4.9\conf 目录，打开apache配置文件 httpd.conf ，在里面搜索 httpd-vhosts.conf ，会找到下面这样一行：
+#Include conf/extra/httpd-vhosts.conf
+把最前面的 # 去掉（没有 # 的话直接进行下一步），保存并退出。
+三、添加虚拟域名
+
+进入 D:\wamp\bin\apache\apache2.4.9\conf\extra 目录，打开 httpd-vhosts.conf 文件，添加下面的代码：
+<VirtualHost *:80>
+ ServerAdmin webmaster@laravel.dev
+ DocumentRoot "d:/wamp/www/laravel5/public"
+ ServerName laravel.dev
+ ErrorLog "logs/laravel.dev-error.log"
+ CustomLog "logs/laravel.dev-access.log" common
+</VirtualHost>
+至此，已经启用虚拟域名并添加好了虚拟域名，重启apache服务，在浏览器输入http://laravel.dev/，可以看到已经可以正常访问本地的Laravel 5了。
+
+
+解决某些应用设置了虚拟域名，其他的应用不能访问
+<VirtualHost *:80> 
+    ServerAdmin 127.0.0.1 
+    DocumentRoot "D:/wamp/www/" 
+    ServerName localhost 
+</VirtualHost>
+
+
+给其他人访问，403Forbidden等错误的解决办法
+
+在httpd-vhosts.conf 文件中，加入目录访问权限
+<Directory "C:/work_php/">
+Options FollowSymLinks Indexes
+AllowOverride None
+Order deny,allow
+require all granted
+</Directory>
+
+
+1、Laravel 5 的网站入口为Laravel 5安装目录下的 /public 目录，而非Laravel 5的安装目录，此点需要注意！
+
+2、解决wampserver + laravel无法访问自定义路由
+
+使用composer下载laravel 5.0之后测试 routes.php 自定义路由 得到404 
+
+修改apache的httpd.conf文件如下：
+LoadModule rewrite_module modules/mod_rewrite.so
+启用URL重写模块，如果没有启用，会导致laravel自定义路由访问全部报404错误！
+重启wamp。 
+
+
+
+
